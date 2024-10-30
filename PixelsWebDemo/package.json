@@ -1,0 +1,60 @@
+{
+  "private": true,
+  "name": "pixelswebdemo",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider preact build --no-inline-css",
+    "build16": "preact build --no-inline-css",
+    "serve": "sirv build --cors --single",
+    "dev": "cross-env NODE_OPTIONS=--openssl-legacy-provider preact watch",
+    "dev16": "preact watch",
+    "typescript": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --cache",
+    "test": "jest ./tests",
+    "link-packages": "yarn link @systemic-games/pixels-core-utils && yarn link @systemic-games/pixels-core-animation && yarn link @systemic-games/pixels-core-connect && yarn link @systemic-games/pixels-edit-animation && yarn link @systemic-games/pixels-react && yarn link @systemic-games/pixels-three && yarn link @systemic-games/pixels-web-connect",
+    "unlink-packages": "yarn unlink @systemic-games/pixels-core-utils && yarn unlink @systemic-games/pixels-core-animation && yarn unlink @systemic-games/pixels-core-connect && yarn unlink @systemic-games/pixels-edit-animation && yarn unlink @systemic-games/pixels-react && yarn unlink @systemic-games/pixels-three && yarn unlink @systemic-games/pixels-web-connect"
+  },
+  "dependencies": {
+    "@systemic-games/pixels-core-connect": "^1.2.0",
+    "@systemic-games/pixels-edit-animation": "^1.2.0",
+    "@systemic-games/pixels-react": "^1.2.0",
+    "@systemic-games/pixels-web-connect": "^1.2.0",
+    "preact": "^10.15.1",
+    "preact-render-to-string": "^5.2.6",
+    "preact-router": "^4.1.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "@types/enzyme": "^3.10.13",
+    "@types/node": "^16.11.7",
+    "@types/jest": "^27.5.1",
+    "@types/web-bluetooth": "^0.0.20",
+    "@typescript-eslint/eslint-plugin": "^5.60.1",
+    "@typescript-eslint/parser": "^5.60.1",
+    "cross-env": "^7.0.3",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-preact-pure": "^4.1.0",
+    "eslint": "^8.43.0",
+    "eslint-config-preact": "^1.3.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-jest": "27.2.2",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^8.0.3",
+    "jest": "^27.5.1",
+    "jest-preset-preact": "^4.0.5",
+    "preact-cli": "^3.4.5",
+    "prettier": "^2.8.8",
+    "sirv-cli": "^2.0.2",
+    "typescript": "^4.7.4"
+  },
+  "jest": {
+    "preset": "jest-preset-preact",
+    "setupFiles": [
+      "<rootDir>/tests/__mocks__/browserMocks.ts",
+      "<rootDir>/tests/__mocks__/setupTests.ts"
+    ]
+  }
+}

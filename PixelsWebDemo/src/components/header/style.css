@@ -1,0 +1,59 @@
+.header {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: var(--header-height);
+	padding: 0;
+	background: var(--pixels-accent);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+	z-index: 50;
+}
+
+.header h1 {
+	float: left;
+	margin: 0;
+	padding: 0 15px;
+	display: flex;
+	align-items: center;
+}
+
+.header h1 img {
+	width: 65px;
+	margin-left: 40px;
+}
+
+.header h1 text {
+	font-size: 42px;
+	line-height: var(--header-height);
+	font-weight: 600;
+	color: var(--pixels-dark-gray);
+	margin-left: 30px;
+}
+
+.header nav {
+	float: right;
+	font-size: 100%;
+}
+
+.header nav a {
+	display: inline-block;
+	height: var(--header-height);
+	line-height: var(--header-height);
+	padding: 0 15px;
+	min-width: 50px;
+	text-align: center;
+	background: rgba(255,255,255,0);
+	text-decoration: none;
+	color: var(--pixels-text-light);
+	will-change: background-color;
+}
+
+.header nav a:hover,
+.header nav a:active {
+	background: rgba(0,0,0,0.2);
+}
+
+.header nav a.active {
+	background: rgba(0,0,0,0.4);
+}
