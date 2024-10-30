@@ -36,8 +36,6 @@ interface ControlsProps {
   setOddOrEven: (oddOrEven: OddOrEven) => void;
   allDiceRolled: boolean;
   connect: () => Promise<void>;
-  d_open: () => Promise<void>;
-  d_change: () => Promise<void>;
 }
 
 const Controls: FunctionalComponent<ControlsProps> = ({
@@ -48,8 +46,6 @@ const Controls: FunctionalComponent<ControlsProps> = ({
   setOddOrEven,
   allDiceRolled,
   connect,
-  d_open,
-  d_change,
 }) => {
   const onChangeValue = useCallback(
     (event: h.JSX.TargetedEvent<HTMLDivElement>) => {
@@ -85,12 +81,6 @@ const Controls: FunctionalComponent<ControlsProps> = ({
           ) : (
             <></>
           )}
-          <button class={style.buttonHighlighted} onClick={d_open}>
-            Dummy Open
-          </button>
-          <button class={style.buttonHighlighted} onClick={d_change}>
-            Dummy Change
-          </button>
         </>
       ) : playMode === "transfer" ? (
         <>
@@ -341,13 +331,6 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
     }
   }, [clearRolls]);
 
-  const d_open = useCallback(async () => {
-    console.log("OPEN");
-  }, [clearRolls]);
-  const d_change = useCallback(async () => {
-    console.log("CHANGE");
-  }, [clearRolls]);
-
   const disconnect = useCallback(
     async (pixel: Pixel) => {
       clearRolls();
@@ -467,8 +450,6 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
         oddOrEven={oddOrEven}
         setOddOrEven={setOddOrEven}
         connect={connect}
-        d_open={d_open}
-        d_change={d_change}
         allDiceRolled={!!gameWinOrLoose}
       />
       <p />
