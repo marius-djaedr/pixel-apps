@@ -8,7 +8,7 @@ const Header: FunctionalComponent = () => {
     <header class={style.header}>
       <h1>
         <img class={style.logo} src={logoPath} />
-        <text>Odd Or Even?</text>
+        <text>Silver Lining Finale</text>
       </h1>
       {/* <nav>
         <Link activeClassName={style.active} href="/">

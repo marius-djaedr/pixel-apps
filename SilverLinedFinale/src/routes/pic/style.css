@@ -1,0 +1,23 @@
+.profile {
+	padding: var(--header-height) 20px;
+	min-height: 100%;
+	width: 100%;
+}
+
+button {
+	background-color: var(--pixels-gray);
+	border: none;
+	color: var(--pixels-text-light);
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 20px;
+	font-weight: 600;
+	padding: 10px 20px;
+	margin: 5px;
+	border-radius: 12px;
+}
+
+.buttonHighlighted {
+	background-color: var(--pixels-accent);
+}

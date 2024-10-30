@@ -36,6 +36,8 @@ interface ControlsProps {
   setOddOrEven: (oddOrEven: OddOrEven) => void;
   allDiceRolled: boolean;
   connect: () => Promise<void>;
+  d_open: () => Promise<void>;
+  d_change: () => Promise<void>;
 }
 
 const Controls: FunctionalComponent<ControlsProps> = ({
@@ -46,6 +48,8 @@ const Controls: FunctionalComponent<ControlsProps> = ({
   setOddOrEven,
   allDiceRolled,
   connect,
+  d_open,
+  d_change,
 }) => {
   const onChangeValue = useCallback(
     (event: h.JSX.TargetedEvent<HTMLDivElement>) => {
@@ -81,6 +85,12 @@ const Controls: FunctionalComponent<ControlsProps> = ({
           ) : (
             <></>
           )}
+          <button class={style.buttonHighlighted} onClick={d_open}>
+            DUMMY Open
+          </button>
+          <button class={style.buttonHighlighted} onClick={d_change}>
+            DUMMY Change
+          </button>
         </>
       ) : playMode === "transfer" ? (
         <>
@@ -331,6 +341,21 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
     }
   }, [clearRolls]);
 
+  const d_open = useCallback(async () => {
+    console.log("OPEN");
+    window.open("/pic","_blank","popup");
+  }, []);
+
+
+  const d_change = useCallback(async () => {
+    const imgs = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
+    const randomIndex = Math.floor(Math.random() * imgs.length);
+    const img = '/assets/images/'+imgs[randomIndex]+'.png'
+
+    console.log("CHANGE "+img);
+    localStorage.setItem('d_pic',""+img);
+  }, []);
+
   const disconnect = useCallback(
     async (pixel: Pixel) => {
       clearRolls();
@@ -450,6 +475,8 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
         oddOrEven={oddOrEven}
         setOddOrEven={setOddOrEven}
         connect={connect}
+        d_open={d_open}
+        d_change={d_change}
         allDiceRolled={!!gameWinOrLoose}
       />
       <p />
