@@ -23,7 +23,7 @@ import { usePixelStatus } from "@systemic-games/pixels-react";
 
 type PlayMode = "setup" | "transfer" | "silent" | "listen";
 
-const minNumDice = 0;
+const minNumDice = 1;
 const delayBeforeAnimResults = 100;
 const delayBetweenAnimResults = 2000;
 
@@ -183,10 +183,11 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
   const [playMode, setPlayModeRaw] = useState<PlayMode>("setup");
   const [transferProgresses, setTransferProgresses] = useState<number[]>([]);
   const [rolls] = useState<number[]>([]);
-  const [results, setResults] = useState<number[]>([]);
   const [resultText, setResultText] = useState<string>("");
   const [allDiceRolled, setAllDiceRolled] = useState(false);
   const [, setRollAnimTimeoutId] = useState<ReturnType<typeof setTimeout>>();
+  
+  let results: number[] = [];
 
   // Store our animations
   const animDataSet = useMemo(() => {
@@ -239,7 +240,7 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
   const clearRolls = useCallback(() => {
     console.log("Clearing rolls");
     rolls.length = 0;
-    setResults([]);
+    results = [];
     setAllDiceRolled(false);
     setRollAnimTimeoutId((rollAnimTimeoutId) => {
       if (rollAnimTimeoutId) {
@@ -330,16 +331,17 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
 
   const onRoll = useCallback(
     (pixel: Pixel, face: number, state: PixelRollState) => {
+      console.log('DIE ROLL')
       if (playMode === "listen") {
         const index = pixels.indexOf(pixel);
         if (index >= 0) {
-          rolls[index] = state === "onFace" ? face : 0;
+          rolls[index] = face;
           const validRollsCount = rolls.filter((f) => !!f).length;
           setAllDiceRolled((allDiceRolled) => {
             const allRolled = pixels.length === validRollsCount;
             if (allDiceRolled !== allRolled) {
               if (!allRolled) {
-                setResults([]);
+                results = [];
               }
               return allRolled;
             }
@@ -357,13 +359,14 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
   const imgs = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
   const resultTexts = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
   const updateImage = () => {
-    //const randomIndex = results[0];
-    const randomIndex = Math.floor(Math.random() * imgs.length);
-    const img = '/assets/images/'+imgs[randomIndex]+'.png'
+    console.log(results);
+    const index = results[0];
+    //const randomIndex = Math.floor(Math.random() * imgs.length);
+    const img = '/assets/images/'+imgs[index]+'.png'
 
     console.log("CHANGE "+img);
     localStorage.setItem('d_pic',img);
-    setResultText(resultTexts[randomIndex]);
+    setResultText(resultTexts[index]);
   };
 
   useEffect(() => {
@@ -380,9 +383,9 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
         return setTimeout(() => {
           Promise.allSettled(pixels.map((pixel) => pixel.stopAllAnimations()))
             .then(() => {
-              setResults(rolls);
-              setPlayMode('silent');
+              results = rolls;
               updateImage();
+              setPlayMode('silent');
               pixels.forEach((pixel, i) =>
                 setTimeout(() => {
                   //TODO register timeout with setRollAnimTimeoutId so it's cancelled by clearRolls

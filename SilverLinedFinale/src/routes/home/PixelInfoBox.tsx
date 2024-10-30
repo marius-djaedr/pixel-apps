@@ -1,8 +1,9 @@
 import { FunctionalComponent, h } from "preact";
-import { useEffect } from "preact/hooks";
+import { useEffect,useState } from "preact/hooks";
 import {
   Pixel,
   PixelRollStateValues,
+  PixelRollState
 } from "@systemic-games/pixels-web-connect";
 import style from "./style.css";
 import { usePixelStatus, usePixelValue } from "@systemic-games/pixels-react";
@@ -24,6 +25,7 @@ const PixelInfoBox: FunctionalComponent<PixelInfoBoxProps> = ({
   const status = usePixelStatus(pixel);
   const [rollState] = usePixelValue(pixel, "rollState");
   const [rollResult] = usePixelValue(pixel, "roll");
+  const [rollStateVal, setRollStateVal] = useState<PixelRollState>("unknown");
 
   useEffect(() => {
     if (status === "ready") {
@@ -45,9 +47,13 @@ const PixelInfoBox: FunctionalComponent<PixelInfoBoxProps> = ({
   }, [pixel, status]);
 
   useEffect(() => {
-    if (rollState) {
-      // Notify roll state change
-      onRoll?.(pixel, rollState.face, rollState.state);
+    if (rollState && rollState.state !== rollStateVal) {
+      setRollStateVal(rollState.state);
+
+      if(rollState.state === "onFace"){
+        // Notify roll state change
+        onRoll?.(pixel, rollState.face, rollState.state);
+      }
     }
   }, [onRoll, pixel, rollState]);
 
