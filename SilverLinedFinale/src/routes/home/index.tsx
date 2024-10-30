@@ -5,7 +5,7 @@ import {
   AppDataSet,
 } from "@systemic-games/pixels-edit-animation";
 import { useEffect, useState } from "preact/hooks";
-import OddOrEvenGame from "./OddOrEvenGame";
+import MainInterface from "./MainInterface";
 
 async function loadAppDataSetFromJson(jsonFilename: string) {
   const res = await fetch(`./assets/${jsonFilename}`);
@@ -53,7 +53,7 @@ const Home: FunctionalComponent = () => {
   return (
     <div class={style.home}>
       {defaultAppDataSet ? (
-        <OddOrEvenGame defaultAppDataSet={defaultAppDataSet} />
+        <MainInterface defaultAppDataSet={defaultAppDataSet} />
       ) : (
         <p>Loading...</p>
       )}

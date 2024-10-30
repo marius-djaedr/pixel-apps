@@ -21,10 +21,9 @@ import PixelInfoBox from "./PixelInfoBox";
 import style from "./style.css";
 import { usePixelStatus } from "@systemic-games/pixels-react";
 
-type PlayMode = "setup" | "transfer" | "play";
-type OddOrEven = "odd" | "even";
+type PlayMode = "setup" | "transfer" | "silent" | "listen";
 
-const minNumDice = 3;
+const minNumDice = 0;
 const delayBeforeAnimResults = 100;
 const delayBetweenAnimResults = 2000;
 
@@ -32,42 +31,28 @@ interface ControlsProps {
   readyCount: number;
   playMode: PlayMode;
   setPlayMode: (playMode: PlayMode) => void;
-  oddOrEven: OddOrEven;
-  setOddOrEven: (oddOrEven: OddOrEven) => void;
   allDiceRolled: boolean;
   connect: () => Promise<void>;
   d_open: () => Promise<void>;
-  d_change: () => Promise<void>;
 }
 
 const Controls: FunctionalComponent<ControlsProps> = ({
   readyCount,
   playMode,
   setPlayMode,
-  oddOrEven,
-  setOddOrEven,
   allDiceRolled,
   connect,
   d_open,
-  d_change,
 }) => {
-  const onChangeValue = useCallback(
-    (event: h.JSX.TargetedEvent<HTMLDivElement>) => {
-      if ((event.target as HTMLInputElement).value === "odd") {
-        setOddOrEven("odd");
-      } else {
-        setOddOrEven("even");
-      }
-    },
-    [setOddOrEven]
-  );
-  const setTransferMode = useCallback(
-    () => setPlayMode("transfer"),
-    [setPlayMode]
-  );
   const setSetupMode = useCallback(() => setPlayMode("setup"), [setPlayMode]);
+  const setTransferMode = useCallback(() => setPlayMode("transfer"), [setPlayMode]);
+  const setSilentMode = useCallback(() => setPlayMode("silent"), [setPlayMode]);
+  const setListenMode = useCallback(() => setPlayMode("listen"), [setPlayMode]);
   return (
     <div>
+      <button class={style.buttonHighlighted} onClick={d_open}>
+        Open Display
+      </button>
       {playMode === "setup" ? (
         <>
           <p>
@@ -85,51 +70,30 @@ const Controls: FunctionalComponent<ControlsProps> = ({
           ) : (
             <></>
           )}
-          <button class={style.buttonHighlighted} onClick={d_open}>
-            DUMMY Open
-          </button>
-          <button class={style.buttonHighlighted} onClick={d_change}>
-            DUMMY Change
-          </button>
         </>
       ) : playMode === "transfer" ? (
         <>
           <p>{`Transferring animations, please wait...`}</p>
-          {/* TODO <button
-            class={style.buttonHighlighted}
-            onClick={() => setPlayMode("setup")}
-          >
-            Cancel Transfer
-          </button> */}
+        </>
+      ) : playMode === "listen" ? (
+        <>
+          <p>Listening for die roll</p>
+          <button class={style.buttonHighlighted} onClick={setSilentMode}>
+            Cancel Listen
+          </button>
+          <button class={style.buttonHighlighted} onClick={setSetupMode}>
+            Return to Setup
+          </button>
         </>
       ) : (
         <>
-          <p>
-            {allDiceRolled
-              ? "Results are in! Roll your dice to play again."
-              : `Betting on ${oddOrEven} numbers, change your choice or roll your dice!`}
-          </p>
-          <div class={style.controlsButtons}>
-            <div onChange={onChangeValue}>
-              <input
-                type="radio"
-                name="oddOrEven"
-                value="odd"
-                checked={oddOrEven === "odd"}
-              />
-              <text class={style.controlsText}>Odd</text>
-              <input
-                type="radio"
-                name="oddOrEven"
-                value="even"
-                checked={oddOrEven === "even"}
-              />
-              <text class={style.controlsText}>Even</text>
-            </div>
-            <button class={style.buttonHighlighted} onClick={setSetupMode}>
-              Stop Game
-            </button>
-          </div>
+        <p>Latests results displayed below</p>
+        <button class={style.buttonHighlighted} onClick={setListenMode}>
+          Listen
+        </button>
+        <button class={style.buttonHighlighted} onClick={setSetupMode}>
+          Return to Setup
+        </button>
         </>
       )}
     </div>
@@ -208,19 +172,19 @@ const PixelControls: FunctionalComponent<PixelControlsProps> = ({
   );
 };
 
-interface OddOrEvenGameProps {
+interface MainInterfaceProps {
   defaultAppDataSet: AppDataSet;
 }
 
-const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
+const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
   defaultAppDataSet,
 }) => {
   const [pixels, setPixels] = useState<Pixel[]>([]);
   const [playMode, setPlayModeRaw] = useState<PlayMode>("setup");
-  const [oddOrEven, setOddOrEven] = useState<OddOrEven>("odd");
   const [transferProgresses, setTransferProgresses] = useState<number[]>([]);
   const [rolls] = useState<number[]>([]);
-  const [results, setResults] = useState<OddOrEven[]>([]);
+  const [results, setResults] = useState<number[]>([]);
+  const [resultText, setResultText] = useState<string>("");
   const [allDiceRolled, setAllDiceRolled] = useState(false);
   const [, setRollAnimTimeoutId] = useState<ReturnType<typeof setTimeout>>();
 
@@ -313,7 +277,7 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
             )
               .then(() => {
                 console.log("Animations transferred to all dice");
-                setPlayMode("play");
+                setPlayMode("silent");
               })
               .catch((error) => console.error(error)); //TODO handle fail transfer
           }
@@ -346,16 +310,6 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
     window.open("/pic","_blank","popup");
   }, []);
 
-
-  const d_change = useCallback(async () => {
-    const imgs = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
-    const randomIndex = Math.floor(Math.random() * imgs.length);
-    const img = '/assets/images/'+imgs[randomIndex]+'.png'
-
-    console.log("CHANGE "+img);
-    localStorage.setItem('d_pic',""+img);
-  }, []);
-
   const disconnect = useCallback(
     async (pixel: Pixel) => {
       clearRolls();
@@ -374,29 +328,9 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => () => clearRolls, []);
 
-  // const playAnimation = (pixel: Pixel, winOrLoose: "win" | "lose") => {
-  //   // Play Rainbow for winners and blink magenta for the others
-  //   const editDataSet = new EditDataSet();
-  //   editDataSet.animations.push(
-  //     winOrLoose === "win"
-  //       ? new EditAnimationRainbow({
-  //           duration: 3,
-  //           count: 2,
-  //           fade: 0.5,
-  //         })
-  //       : new EditAnimationSimple({
-  //           duration: 1,
-  //           color: Color.darkMagenta,
-  //           count: 2,
-  //           fade: 128,
-  //         })
-  //   );
-  //   pixel.playTestAnimation(editDataSet.toDataSet());
-  // };
-
   const onRoll = useCallback(
     (pixel: Pixel, face: number, state: PixelRollState) => {
-      if (playMode === "play") {
+      if (playMode === "listen") {
         const index = pixels.indexOf(pixel);
         if (index >= 0) {
           rolls[index] = state === "onFace" ? face : 0;
@@ -419,14 +353,26 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
     [playMode, pixels, rolls]
   );
 
+  
+  const imgs = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
+  const resultTexts = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
+  const updateImage = () => {
+    //const randomIndex = results[0];
+    const randomIndex = Math.floor(Math.random() * imgs.length);
+    const img = '/assets/images/'+imgs[randomIndex]+'.png'
+
+    console.log("CHANGE "+img);
+    localStorage.setItem('d_pic',img);
+    setResultText(resultTexts[randomIndex]);
+  };
+
   useEffect(() => {
-    if (playMode === "play" && allDiceRolled) {
+    if (playMode === "listen" && allDiceRolled) {
       console.log(
         `All dice rolled: ${pixels
           .map((p, i) => `${p.name} => ${rolls[i]}`)
           .join(", ")}`
       );
-      const oddOrEvenRolls = rolls.map((f) => (f % 2 === 1 ? "odd" : "even"));
       setRollAnimTimeoutId((rollAnimTimeoutId) => {
         if (rollAnimTimeoutId) {
           clearTimeout(rollAnimTimeoutId);
@@ -434,11 +380,13 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
         return setTimeout(() => {
           Promise.allSettled(pixels.map((pixel) => pixel.stopAllAnimations()))
             .then(() => {
-              setResults(oddOrEvenRolls);
+              setResults(rolls);
+              setPlayMode('silent');
+              updateImage();
               pixels.forEach((pixel, i) =>
                 setTimeout(() => {
                   //TODO register timeout with setRollAnimTimeoutId so it's cancelled by clearRolls
-                  const win = oddOrEvenRolls[i] === oddOrEven;
+                  const win = true;
                   console.log(
                     `Playing ${win ? "win" : "loose"} animation on ${
                       pixel.name
@@ -454,16 +402,7 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
         }, delayBeforeAnimResults);
       });
     }
-  }, [allDiceRolled, oddOrEven, pixels, playMode, rolls]);
-
-  const oddRolls = results.filter((r) => r === "odd").length;
-  const evenRolls = results.filter((r) => r === "even").length;
-  const gameWinOrLoose = !results.length
-    ? undefined
-    : (oddOrEven === "odd" && oddRolls >= evenRolls) ||
-      (oddOrEven === "even" && evenRolls >= oddRolls)
-    ? "win"
-    : "lose";
+  }, [allDiceRolled, pixels, playMode, rolls]);
 
   return (
     <div>
@@ -472,12 +411,9 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
         readyCount={pixels.length} //TODO .filter((p) => p.ready).length}
         playMode={playMode}
         setPlayMode={setPlayMode}
-        oddOrEven={oddOrEven}
-        setOddOrEven={setOddOrEven}
         connect={connect}
         d_open={d_open}
-        d_change={d_change}
-        allDiceRolled={!!gameWinOrLoose}
+        allDiceRolled={allDiceRolled}
       />
       <p />
       <p />
@@ -494,26 +430,7 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
                       <></>
                     )}
                   </PixelInfoBox>
-                  {playMode === "play" && gameWinOrLoose ? (
-                    <div
-                      class={[
-                        style.resultBox,
-                        results[i] === oddOrEven
-                          ? style.animVFlip
-                          : style.animHFlip,
-                      ].join(" ")}
-                    >
-                      <img
-                        src={
-                          results[i] === oddOrEven
-                            ? "/assets/images/smile.png"
-                            : "/assets/images/angry.png"
-                        }
-                        alt={results[i]}
-                      />
-                      <text>{results[i]}</text>
-                    </div>
-                  ) : playMode === "transfer" ? (
+                  {playMode === "transfer" ? (
                     <div class={style.resultBox}>
                       <text>{`Transfer: ${
                         transferProgresses[i] !== undefined
@@ -529,17 +446,10 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
             ))}
           </ul>
           <div>
-            <p />
-            {gameWinOrLoose ? (
-              <div class={style.animVFlip}>
-                <text class={style.gameResult}>{`There are ${
-                  oddRolls ? oddRolls : "no"
-                } odd roll${oddRolls > 1 ? "s" : ""} and ${
-                  evenRolls ? evenRolls : "no"
-                } even roll${evenRolls > 1 ? "s" : ""}, you've ${
-                  gameWinOrLoose === "win" ? "won" : "lost"
-                } your bet!`}</text>
-              </div>
+            {playMode === "silent" ? (
+              <>
+                <p>{resultText}</p>
+              </>
             ) : (
               <></>
             )}
@@ -552,4 +462,4 @@ const OddOrEvenGame: FunctionalComponent<OddOrEvenGameProps> = ({
   );
 };
 
-export default OddOrEvenGame;
+export default MainInterface;
