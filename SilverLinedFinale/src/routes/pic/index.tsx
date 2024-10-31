@@ -6,7 +6,7 @@ interface Props {
 }
 
 const Pic: FunctionalComponent<Props> = (props: Props) => {
-  const [pic, setPic] = useState<string>("/assets/images/D20.png");
+  const [pic, setPic] = useState<string>("/assets/images/gods/neutral.jpg");
 
   // gets called when this route is navigated to
   useEffect(() => {

@@ -27,6 +27,52 @@ const minNumDice = 1;
 const delayBeforeAnimResults = 100;
 const delayBetweenAnimResults = 2000;
 
+
+const imgs = [
+  'vecna',//1
+  'vecna',//2
+  'gruumsh',//3
+  'tuern',//4
+  'khala',//5
+  'gorellik',//6
+  'stranger',//7
+  'neutral',//8
+  'neutral', //9
+  'neutral',//10
+  'neutral',//11
+  'neutral',//12
+  'neutral',//13
+  'neutral',//14
+  'garl',//15
+  'io',//16
+  'amoth',//17
+  'yondalla',//18
+  'boccob',//19
+  'boccob'//20
+];
+const resultTexts = [
+  '1 - Vecna - whispers all around. Start of turn, DC 45 Will save or doomed 1 and -2 saves against mental, fear, and death affects for rest of combat (save affects only 1 round)',
+  '2 - Vecna - whispers all around. Start of turn, DC 45 Will save or doomed 1 and -2 saves against mental, fear, and death affects for rest of combat (save affects only 1 round)',
+  '3 - Gruumsh - double all damage dealt this round (including from enemies)',
+  '4 - Tuern - all attacks resolve at 1 step higher (including from enemies)',
+  '5 - Khala - massive storms, lightning and wind. DC 45 Reflex save to take any move action within the winds; flying creatures use the outcome one degree of success worse than what they roll. Creatures who critically fail are blown 30 feet in a random direction, knocked prone, and take 4d6 electricity damage.',
+  '6 - Gorellik - massive beast charges across the battlefield. DC 45 basic reflex save, 5d10+20 damage',
+  '7 - Stranger - life is being siphoned. if take damage, DC 45 Fort save or Drained 1',
+  '8 - Yldren x Bob (dragon fear immediately)',
+  '9 - Undead - mob',
+  '10 - Devils - mob',
+  '11 - Dragons - mob',
+  '12 - Psychopomps - mob',
+  '13 - Spirits - mob',
+  '14 - Angels - mob',
+  '15 - Garl - this round, all attacks by an enemy get redirected to a different enemy. Argent gets a DC 45 Will save',
+  '16 - Io - powerful roar, get filled with energy. For this round, ignores effects that would give them a circumstance penalty to Speed. When they attempt to Escape an effect that has them immobilized, grabbed, or restrained, they automatically succeed. They gain a fly speed of 60 feet, and treat creatures on the ground as off-guard when they are airborne',
+  '17 - Amoth - activates all constructs and supercharges them. They wipe out the undead mobs, deal some damage to Argent, and then go away',
+  '18 - Yondalla - food springs up from the ground. As interact action, can 3 pieces of food. For each one eaten, either remove an effect or regain 50 HP',
+  '19 - Boccob - find yourself in between Boccob and Vecna, with Boccob charging up an energy attack from the crystal. Only way to avoid, spend all actions moving out of the way. Any who remain take 5d12+30 damage. All enemies wiped from board. Whether left or stayed, gain quickened 1 for rest of combat',
+  '20 - Boccob - find yourself in between Boccob and Vecna, with Boccob charging up an energy attack from the crystal. Only way to avoid, spend all actions moving out of the way. Any who remain take 5d12+30 damage. All enemies wiped from board. Whether left or stayed, gain quickened 1 for rest of combat'
+];
+
 interface ControlsProps {
   readyCount: number;
   playMode: PlayMode;
@@ -356,13 +402,11 @@ const MainInterface: FunctionalComponent<MainInterfaceProps> = ({
   );
 
   
-  const imgs = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
-  const resultTexts = ['angry','blinker','clear','D20','pixels-logo','rainbow','smile'];
   const updateImage = () => {
     console.log(results);
     const index = results[0];
     //const randomIndex = Math.floor(Math.random() * imgs.length);
-    const img = '/assets/images/'+imgs[index]+'.png'
+    const img = '/assets/images/gods/'+imgs[index]+'.jpg'
 
     console.log("CHANGE "+img);
     localStorage.setItem('d_pic',img);
